@@ -1,0 +1,24 @@
+{
+  "name": "tuf",
+  "version": "1.0.0",
+  "description": "terminal ui framework",
+  "main": "index.js",
+  "author": "hzoells <hzoells@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "build": "yarn clean && tsc src/index.ts --outDir dist",
+    "runjs": "yarn build && node dist/index.js",
+    "start": "ts-node src/index.ts",
+    "clean": "rm -rf ./dist"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.24",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.3.3"
+  }
+}
