@@ -1,5 +1,5 @@
-import { ILogger } from 'ILogger';
-import {Either, isRight, isLeft} from './either'
+import { ILogger } from 'libs/logging';
+import { Either } from 'libs/monads'
 
 export class Component {
   constructor(children: Either<Component, string>[], alignChildren: ComponentAlignChildren, logger: ILogger) {
@@ -17,13 +17,14 @@ export class Component {
 
     for (let i = 0; i < this.children.length; i++) {
       let childWidth = 0, childHeight = 0
-      if (isLeft(this.children[i])) {
-        const childDimensions = this.children[i].left.getDimensions()
+      const child = this.children[i]
+      if (child.isLeft()) {
+        const childDimensions = child.left.getDimensions()
         childHeight = childDimensions.height
         childWidth = childDimensions.width
       } else {
         childHeight = 1
-        childWidth = this.children[i].right.length
+        childWidth = child.right.length
       }
 
       if (this.alignment == ComponentAlignChildren.Vertical) {
@@ -48,13 +49,14 @@ export class Component {
         let remainingHeight = maxHeight
 
         for (let i = 0; i < this.children.length; i++) {
+          const child = this.children[i]
           if (remainingHeight > 0) {
-            if (isRight(this.children[i])) {
-              const childContent = this.children[i].right.length > width ? this.children[i].right.slice(0, width) : this.children[i].right.concat(' '.repeat(width - this.children[i].right.length));
+            if (child.isRight()) {
+              const childContent = child.right.length > width ? child.right.slice(0, width) : child.right.concat(' '.repeat(width - child.right.length));
               content.push(childContent)
               remainingHeight--
             } else {
-              const childContent = this.children[i].left.render(this.alignment, width, remainingHeight)
+              const childContent = child.left.render(this.alignment, width, remainingHeight)
 
               content.push(...childContent.slice(0, remainingHeight))
 
@@ -77,17 +79,18 @@ export class Component {
         let remainingWidth = Math.min(maxWidth, fullWidth)
 
         for (let i = 0; i < this.children.length; i++) {
+          const child = this.children[i]
           if (remainingWidth > 0) {
-            if (isRight(this.children[i])) {
-              const childWidth = Math.min(this.children[i].right.length, remainingWidth)
-              content[0] = content[0].concat(this.children[i].right.slice(0, childWidth))
+            if (child.isRight()) {
+              const childWidth = Math.min(child.right.length, remainingWidth)
+              content[0] = content[0].concat(child.right.slice(0, childWidth))
               const padString = ' '.repeat(childWidth)
               for (let j = 1; j < content.length; j++) {
                 content[j] = content[j].concat(padString)
               }
               remainingWidth -= childWidth
             } else {
-              const childContent = this.children[i].left.render(this.alignment, remainingWidth, height)
+              const childContent = child.left.render(this.alignment, remainingWidth, height)
               for (let j = 0; j < content.length; j++) {
                 content[j] = content[j].concat(childContent[j])
               }
@@ -112,12 +115,13 @@ export class Component {
 
         for (let i = 0; i < this.children.length; i++) {
           if (remainingHeight > 0) {
-            if (isRight(this.children[i])) {
-              const childContent = this.children[i].right.length > width ? this.children[i].right.slice(0, width) : this.children[i].right.concat(' '.repeat(width - this.children[i].right.length));
+            const child = this.children[i]
+            if (child.isRight()) {
+              const childContent = child.right.length > width ? child.right.slice(0, width) : child.right.concat(' '.repeat(width - child.right.length));
               content.push(childContent)
               remainingHeight--
             } else {
-              const childContent = this.children[i].left.render(this.alignment, width, remainingHeight)
+              const childContent = child.left.render(this.alignment, width, remainingHeight)
 
               content.push(...childContent.slice(0, remainingHeight))
 
@@ -138,17 +142,18 @@ export class Component {
         let remainingWidth = Math.min(maxWidth, fullWidth)
 
         for (let i = 0; i < this.children.length; i++) {
+          const child = this.children[i]
           if (remainingWidth > 0) {
-            if (isRight(this.children[i])) {
-              const childWidth = Math.min(this.children[i].right.length, remainingWidth)
-              content[0] = content[0].concat(this.children[i].right.slice(0, childWidth))
+            if (child.isRight()) {
+              const childWidth = Math.min(child.right.length, remainingWidth)
+              content[0] = content[0].concat(child.right.slice(0, childWidth))
               const padString = ' '.repeat(childWidth)
               for (let j = 1; j < content.length; j++) {
                 content[j] = content[j].concat(padString)
               }
               remainingWidth -= childWidth
             } else {
-              const childContent = this.children[i].left.render(this.alignment, remainingWidth, height)
+              const childContent = child.left.render(this.alignment, remainingWidth, height)
               for (let j = 0; j < content.length; j++) {
                 content[j] = content[j].concat(childContent[j])
               }
@@ -177,13 +182,14 @@ export class Component {
         let remainingHeight = parentAlignment === ComponentAlignChildren.Vertical ? Math.min(maxHeight, fullHeight) : maxHeight
 
         for (let i = 0; i < this.children.length; i++) {
+          const child = this.children[i]
           if (remainingHeight > 0) {
-            if (isRight(this.children[i])) {
-              const childContent = this.children[i].right.length > width ? this.children[i].right.slice(0, width) : this.children[i].right.concat(' '.repeat(width - this.children[i].right.length));
+            if (child.isRight()) {
+              const childContent = child.right.length > width ? child.right.slice(0, width) : child.right.concat(' '.repeat(width - child.right.length));
               content.push(childContent)
               remainingHeight--
             } else {
-              const childContent = this.children[i].left.render(this.alignment, width, remainingHeight)
+              const childContent = child.left.render(this.alignment, width, remainingHeight)
 
               content.push(...childContent.slice(0, remainingHeight))
 
@@ -205,17 +211,18 @@ export class Component {
       let remainingWidth = parentAlignment === ComponentAlignChildren.Vertical ? maxWidth : Math.min(maxWidth, fullWidth)
 
       for (let i = 0; i < this.children.length; i++) {
+        const child = this.children[i]
         if (remainingWidth > 0) {
-          if (isRight(this.children[i])) {
-            const childWidth = Math.min(this.children[i].right.length, remainingWidth)
-            content[0] = content[0].concat(this.children[i].right.slice(0, childWidth))
+          if (child.isRight()) {
+            const childWidth = Math.min(child.right.length, remainingWidth)
+            content[0] = content[0].concat(child.right.slice(0, childWidth))
             const padString = ' '.repeat(childWidth)
             for (let j = 1; j < content.length; j++) {
               content[j] = content[j].concat(padString)
             }
             remainingWidth -= childWidth
           } else {
-            const childContent = this.children[i].left.render(this.alignment, remainingWidth, height)
+            const childContent = child.left.render(this.alignment, remainingWidth, height)
             for (let j = 0; j < content.length; j++) {
               content[j] = content[j].concat(childContent[j])
             }

@@ -1,8 +1,9 @@
 import { Transform, pipeline } from 'stream'
 import { stdin } from 'node:process'
-import { Component, ComponentAlignChildren } from './component'
-import {right, left} from './either'
-import { FileLogger } from 'fileLogger'
+import {Component, ComponentAlignChildren} from 'libs/component'
+import {right, left} from 'libs/monads'
+import {clearScreen, hideCursor, moveCursor} from 'libs/terminal'
+import { FileLogger } from 'libs/logging'
 
 const SIGINT = 3
 
@@ -28,19 +29,15 @@ const main = async () => {
   logger = await FileLogger.factory({ path: './logs/log.txt' })
   await logger.clearLogFile()
 
-  console.log('\x1b[3J')
-  console.log('\x1b[1J')
+  clearScreen()
+  moveCursor(0,0)
 
-  console.log('\x1b[0;0H')
   const vComponent = new Component([right('some'), right('more')], ComponentAlignChildren.Vertical, logger)
   const hComponent = new Component([right('one'), right('two'), right('three'), left(vComponent)], ComponentAlignChildren.Horizontal, logger)
 
   const content = hComponent.render(ComponentAlignChildren.Horizontal, 30, 30)
   content.map(line => console.log(line))
-  console.log('\x1b[?25l')
-
-  logger.log(`${content.length}`)
-  logger.log(`${content[0].length}`)
+  hideCursor()
   await pipeline(stdin, handleExit, (err) => {})
 }
 

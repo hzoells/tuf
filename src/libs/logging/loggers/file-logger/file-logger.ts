@@ -2,7 +2,7 @@ import { WriteStream, createWriteStream } from 'node:fs';
 import { dirname } from 'node:path'
 import { open, FileHandle, mkdir } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
-import { ILogger } from 'ILogger';
+import { ILogger } from '../../types';
 
 const DEFAULT_PATH = './logs/log.txt'
 
